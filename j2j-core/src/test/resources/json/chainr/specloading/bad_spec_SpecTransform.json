@@ -1,0 +1,8 @@
+[
+    {
+        "operation" : "love.disaster.j2j.core.chainr.transforms.BadSpecTransform",
+        "spec" : {
+            "valid_spec" : "but transform is bad, as it does not have a single arg constructor"
+        }
+    }
+]

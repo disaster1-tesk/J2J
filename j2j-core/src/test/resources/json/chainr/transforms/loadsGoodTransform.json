@@ -1,0 +1,8 @@
+[
+    {
+        "operation" : "love.disaster.j2j.core.chainr.transforms.GoodTestTransform",
+        "spec" : {
+            "a" : "b"
+        }
+    }
+]

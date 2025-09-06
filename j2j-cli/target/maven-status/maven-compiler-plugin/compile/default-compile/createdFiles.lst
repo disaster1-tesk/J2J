@@ -1,0 +1,6 @@
+love/disaster/j2j/cli/JoltCliProcessor.class
+love/disaster/j2j/cli/JoltCli.class
+love/disaster/j2j/cli/SortCliProcessor.class
+love/disaster/j2j/cli/DiffyCliProcessor.class
+love/disaster/j2j/cli/TransformCliProcessor.class
+love/disaster/j2j/cli/JoltCliUtilities.class

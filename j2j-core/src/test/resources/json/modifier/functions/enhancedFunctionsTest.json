@@ -1,0 +1,97 @@
+{
+    "input": {
+        "numbers": [1, 2, 3, 4, 5],
+        "text": "Hello World",
+        "value": 16.75,
+        "timestamp": 1609459200000,
+        "price": 99.99,
+        "items": ["apple", "banana", "cherry", "apple"]
+    },
+    "spec": {
+        "mathOperations": {
+            "multiplication": "=multiply(@(1,numbers))",
+            "squareRoot": "=sqrt(@(1,value))",
+            "ceiling": "=ceil(@(1,price))",
+            "floor": "=floor(@(1,price))",
+            "rounded": "=round(@(1,price))",
+            "power": "=pow(2, 3)",
+            "modulo": "=mod(10, 3)"
+        },
+        "stringOperations": {
+            "replaced": "=replace(@(1,text), 'World', 'Universe')",
+            "upperCase": "=toUpper(@(1,text))",
+            "length": "=stringLength(@(1,text))",
+            "charAt": "=charAt(@(1,text), 0)",
+            "contains": "=stringContains(@(1,text), 'Hello')",
+            "startsWith": "=startsWith(@(1,text), 'Hello')",
+            "endsWith": "=endsWith(@(1,text), 'World')",
+            "repeated": "=repeat('Hi', 3)"
+        },
+        "listOperations": {
+            "reversed": "=reverse(@(1,numbers))",
+            "distinct": "=distinct(@(1,items))",
+            "listSize": "=listSize(@(1,numbers))",
+            "firstElement": "=firstElement(@(1,numbers))",
+            "lastElement": "=lastElement(@(1,numbers))",
+            "joined": "=listJoin('-', @(1,items))"
+        },
+        "objectOperations": {
+            "isNumber": "=isNumber(@(1,value))",
+            "isString": "=isString(@(1,text))",
+            "isList": "=isList(@(1,numbers))",
+            "toString": "=coerceToString(@(1,value))",
+            "defaultValue": "=defaultIfNull(@(1,missing), 'default')"
+        },
+        "dateOperations": {
+            "currentTime": "=now",
+            "formattedDate": "=formatDate('yyyy-MM-dd', @(1,timestamp))",
+            "addedDays": "=addDays(1, @(1,timestamp))"
+        }
+    },
+    "expected": {
+        "numbers": [1, 2, 3, 4, 5],
+        "text": "Hello World",
+        "value": 16.75,
+        "timestamp": 1609459200000,
+        "price": 99.99,
+        "items": ["apple", "banana", "cherry", "apple"],
+        "mathOperations": {
+            "multiplication": 120.0,
+            "squareRoot": 4.092676385936225,
+            "ceiling": 100.0,
+            "floor": 99.0,
+            "rounded": 100,
+            "power": 8.0,
+            "modulo": 1.0
+        },
+        "stringOperations": {
+            "replaced": "Hello Universe",
+            "upperCase": "HELLO WORLD",
+            "length": 11,
+            "charAt": "H",
+            "contains": true,
+            "startsWith": true,
+            "endsWith": true,
+            "repeated": "HiHiHi"
+        },
+        "listOperations": {
+            "reversed": [5, 4, 3, 2, 1],
+            "distinct": ["apple", "banana", "cherry"],
+            "listSize": 5,
+            "firstElement": 1,
+            "lastElement": 5,
+            "joined": "apple-banana-cherry-apple"
+        },
+        "objectOperations": {
+            "isNumber": true,
+            "isString": true,
+            "isList": true,
+            "toString": "16.75",
+            "defaultValue": "default"
+        },
+        "dateOperations": {
+            "formattedDate": "2021-01-01",
+            "addedDays": 1609545600000
+        }
+    }
+}
