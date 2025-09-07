@@ -1,0 +1,26 @@
+
+*****************************************************
+Summary
+-------
+Generated at: 2025-09-08T00:37:38+08:00
+
+Notes: 0
+Binaries: 0
+Archives: 0
+Standards: 0
+
+Apache Licensed: 0
+Generated Documents: 0
+
+JavaDocs are generated, thus a license header is optional.
+Generated files do not require license headers.
+
+0 Unknown Licenses
+
+*****************************************************
+  Files with Apache License headers will be marked AL
+  Binary files (which do not require any license headers) will be marked B
+  Compressed archives will be marked A
+  Notices, licenses etc. will be marked N
+ 
+*****************************************************

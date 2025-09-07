@@ -33,6 +33,9 @@ public class Scripts {
     
     // Reuse ScriptEngineManager for better performance
     private static final ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
+    
+    // Logger for the class
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Scripts.class.getName());
 
     /**
      * Execute JavaScript code with given arguments
@@ -48,7 +51,7 @@ public class Scripts {
             try {
                 ScriptEngine engine = scriptEngineManager.getEngineByName( "javascript" );
                 if (engine == null) {
-                    System.err.println("JavaScript engine not available");
+                    logger.warning("JavaScript engine not available");
                     return Optional.empty();
                 }
                 
@@ -62,11 +65,11 @@ public class Scripts {
                 return Optional.of( result );
             }
             catch ( ScriptException e ) {
-                System.err.println("JavaScript execution error: " + e.getMessage());
+                logger.severe("JavaScript execution error: " + e.getMessage());
                 return Optional.empty();
             }
             catch ( Exception e ) {
-                System.err.println("JavaScript error: " + e.getMessage());
+                logger.severe("JavaScript error: " + e.getMessage());
                 return Optional.empty();
             }
         }
@@ -88,6 +91,7 @@ public class Scripts {
                 // Python engine may not be available depending on JVM
                 if (engine == null) {
                     // Python engine not available, this is not an error
+                    logger.info("Python engine not available");
                     return Optional.empty();
                 }
                 
@@ -101,11 +105,11 @@ public class Scripts {
                 return Optional.of( result );
             }
             catch ( ScriptException e ) {
-                System.err.println("Python execution error: " + e.getMessage());
+                logger.severe("Python execution error: " + e.getMessage());
                 return Optional.empty();
             }
             catch ( Exception e ) {
-                System.err.println("Python error: " + e.getMessage());
+                logger.severe("Python error: " + e.getMessage());
                 return Optional.empty();
             }
         }
@@ -121,31 +125,55 @@ public class Scripts {
      * Example: beetl("Hello ${name}!", {"name": "World"})
      */
     public static final class beetl extends Function.ListFunction {
+        // Static GroupTemplate for better performance
+        private static org.beetl.core.GroupTemplate staticGroupTemplate;
+        
+        static {
+            try {
+                org.beetl.core.resource.StringTemplateResourceLoader resourceLoader = 
+                    new org.beetl.core.resource.StringTemplateResourceLoader();
+                org.beetl.core.Configuration cfg = org.beetl.core.Configuration.defaultConfiguration();
+                staticGroupTemplate = new org.beetl.core.GroupTemplate(resourceLoader, cfg);
+            } catch (Exception e) {
+                logger.severe("Failed to initialize Beetl GroupTemplate: " + e.getMessage());
+            }
+        }
+        
         @Override
         protected Optional<Object> applyList(final List<Object> argList) {
             // Need at least the template and context
             if (argList.size() < 2) {
+                logger.warning("Insufficient arguments for Beetl template execution");
+                return Optional.empty();
+            }
+
+            String templateStr = null;
+            Object contextData = null;
+            
+            try {
+                templateStr = (String) argList.get(0);
+                contextData = argList.get(1);
+            } catch (ClassCastException e) {
+                logger.severe("Invalid argument types for Beetl template: " + e.getMessage());
                 return Optional.empty();
             }
 
             try {
-                // Use Beetl's recommended approach with GroupTemplate and StringTemplateResourceLoader
-                org.beetl.core.resource.StringTemplateResourceLoader resourceLoader = 
-                    new org.beetl.core.resource.StringTemplateResourceLoader();
-                org.beetl.core.Configuration cfg = org.beetl.core.Configuration.defaultConfiguration();
-                org.beetl.core.GroupTemplate gt = new org.beetl.core.GroupTemplate(resourceLoader, cfg);
-                
-                String templateStr = (String) argList.get(0);
-                Object contextData = argList.get(1);
+                // Use the static GroupTemplate for better performance
+                if (staticGroupTemplate == null) {
+                    logger.severe("Beetl GroupTemplate not initialized");
+                    return Optional.empty();
+                }
                 
                 // Create template from string
-                org.beetl.core.Template template = gt.getTemplate(templateStr);
+                org.beetl.core.Template template = staticGroupTemplate.getTemplate(templateStr);
                 
                 // Set context variables using Beetl's binding method
                 if (contextData instanceof Map) {
-                    Map<?, ?> contextMap = (Map<?, ?>) contextData;
-                    for (Map.Entry<?, ?> entry : contextMap.entrySet()) {
-                        template.binding(entry.getKey().toString(), entry.getValue());
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> contextMap = (Map<String, Object>) contextData;
+                    for (Map.Entry<String, Object> entry : contextMap.entrySet()) {
+                        template.binding(entry.getKey(), entry.getValue());
                     }
                 } else {
                     // If not a map, use as single variable
@@ -154,13 +182,14 @@ public class Scripts {
                 
                 // Render template
                 String result = template.render();
+                logger.fine("Beetl template executed successfully");
                 return Optional.of(result);
                 
             } catch (NoClassDefFoundError e) {
-                System.err.println("Beetl library not available: " + e.getMessage());
+                logger.severe("Beetl library not available: " + e.getMessage());
                 return Optional.empty();
             } catch (Exception e) {
-                System.err.println("Beetl template execution error: " + e.getMessage());
+                logger.severe("Beetl template execution error with template '" + templateStr + "': " + e.getMessage());
                 return Optional.empty();
             }
         }
@@ -180,6 +209,7 @@ public class Scripts {
         protected Optional<Object> applyList(final List<Object> argList) {
             // Need at least the query and data
             if (argList.size() < 2) {
+                logger.warning("Insufficient arguments for JSONata query execution");
                 return Optional.empty();
             }
 
@@ -215,6 +245,7 @@ public class Scripts {
                 
                 // Convert result back to appropriate Java object
                 if (result == null || result.isNull()) {
+                    logger.fine("JSONata query returned null result");
                     return Optional.empty();
                 } else if (result.isTextual()) {
                     return Optional.of(result.asText());
@@ -235,10 +266,10 @@ public class Scripts {
                 }
                 
             } catch (NoClassDefFoundError e) {
-                System.err.println("JSONata4Java library not available: " + e.getMessage());
+                logger.severe("JSONata4Java library not available: " + e.getMessage());
                 return Optional.empty();
             } catch (Exception e) {
-                System.err.println("JSONata query execution error: " + e.getMessage());
+                logger.severe("JSONata query execution error: " + e.getMessage());
                 return Optional.empty();
             }
         }
@@ -253,24 +284,39 @@ public class Scripts {
      * - additionalContexts: Additional context objects that will be merged
      */
     public static final class beetlAdvanced extends Function.ListFunction {
+        // Static GroupTemplate for better performance
+        private static org.beetl.core.GroupTemplate staticGroupTemplate;
+        
+        static {
+            try {
+                org.beetl.core.resource.StringTemplateResourceLoader resourceLoader = 
+                    new org.beetl.core.resource.StringTemplateResourceLoader();
+                org.beetl.core.Configuration cfg = org.beetl.core.Configuration.defaultConfiguration();
+                staticGroupTemplate = new org.beetl.core.GroupTemplate(resourceLoader, cfg);
+            } catch (Exception e) {
+                logger.severe("Failed to initialize Beetl GroupTemplate for advanced usage: " + e.getMessage());
+            }
+        }
+        
         @Override
         protected Optional<Object> applyList(final List<Object> argList) {
             // Need at least template and one context
             if (argList.size() < 2) {
+                logger.warning("Insufficient arguments for advanced Beetl template execution");
                 return Optional.empty();
             }
 
             try {
-                // Use Beetl's recommended approach with GroupTemplate
-                org.beetl.core.resource.StringTemplateResourceLoader resourceLoader = 
-                    new org.beetl.core.resource.StringTemplateResourceLoader();
-                org.beetl.core.Configuration cfg = org.beetl.core.Configuration.defaultConfiguration();
-                org.beetl.core.GroupTemplate gt = new org.beetl.core.GroupTemplate(resourceLoader, cfg);
+                // Use the static GroupTemplate for better performance
+                if (staticGroupTemplate == null) {
+                    logger.severe("Beetl GroupTemplate not initialized for advanced usage");
+                    return Optional.empty();
+                }
                 
                 String templateStr = (String) argList.get(0);
                 
                 // Create template from string
-                org.beetl.core.Template template = gt.getTemplate(templateStr);
+                org.beetl.core.Template template = staticGroupTemplate.getTemplate(templateStr);
                 
                 // Merge all context data
                 Map<String, Object> mergedContext = new HashMap<>();
@@ -296,13 +342,14 @@ public class Scripts {
                 
                 // Render template
                 String result = template.render();
+                logger.fine("Advanced Beetl template executed successfully");
                 return Optional.of(result);
                 
             } catch (NoClassDefFoundError e) {
-                System.err.println("Beetl library not available: " + e.getMessage());
+                logger.severe("Beetl library not available: " + e.getMessage());
                 return Optional.empty();
             } catch (Exception e) {
-                System.err.println("Beetl advanced template execution error: " + e.getMessage());
+                logger.severe("Beetl advanced template execution error: " + e.getMessage());
                 return Optional.empty();
             }
         }

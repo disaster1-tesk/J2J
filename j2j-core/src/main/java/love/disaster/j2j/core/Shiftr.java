@@ -19,7 +19,10 @@ import love.disaster.j2j.core.common.Optional;
 import love.disaster.j2j.core.common.tree.MatchedElement;
 import love.disaster.j2j.core.common.tree.WalkedPath;
 import love.disaster.j2j.core.exception.SpecException;
+import love.disaster.j2j.core.exception.TransformException;
 import love.disaster.j2j.core.shiftr.spec.ShiftrCompositeSpec;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.HashMap;
@@ -463,6 +466,10 @@ import java.util.Map;
  */
 public class Shiftr implements SpecDriven, Transform {
 
+    private static final Logger logger = LoggerFactory.getLogger(Shiftr.class);
+    
+    private static final String ROOT_KEY = "root";
+
     private final ShiftrCompositeSpec rootSpec;
 
     /**
@@ -472,15 +479,27 @@ public class Shiftr implements SpecDriven, Transform {
      */
     @Inject
     public Shiftr( Object spec ) {
+        logger.info("Initializing Shiftr transform with spec");
+        logger.debug("Shiftr constructor called with spec type: {}", 
+                    spec != null ? spec.getClass().getSimpleName() : "null");
 
         if ( spec == null ){
+            logger.error("Shiftr initialization failed: spec is null");
             throw new SpecException( "Shiftr expected a spec of Map type, got 'null'." );
         }
         if ( ! ( spec instanceof Map ) ) {
-            throw new SpecException( "Shiftr expected a spec of Map type, got " + spec.getClass().getSimpleName() );
+            String errorMsg = "Shiftr expected a spec of Map type, got " + spec.getClass().getSimpleName();
+            logger.error("Shiftr initialization failed: {}", errorMsg);
+            throw new SpecException( errorMsg );
         }
 
-        rootSpec = new ShiftrCompositeSpec( ROOT_KEY, (Map<String, Object>) spec );
+        try {
+            rootSpec = new ShiftrCompositeSpec( ROOT_KEY, (Map<String, Object>) spec );
+            logger.info("Shiftr initialization completed successfully");
+        } catch (Exception e) {
+            logger.error("Shiftr initialization failed during spec processing: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
 
@@ -494,16 +513,27 @@ public class Shiftr implements SpecDriven, Transform {
      */
     @Override
     public Object transform( Object input ) {
+        logger.debug("Starting Shiftr transform, input type: {}", 
+                    input != null ? input.getClass().getSimpleName() : "null");
+        
+        try {
+            Map<String,Object> output = new HashMap<>();
 
-        Map<String,Object> output = new HashMap<>();
+            // Create a root LiteralPathElement so that # is useful at the root level
+            MatchedElement rootLpe = new MatchedElement( ROOT_KEY );
+            WalkedPath walkedPath = new WalkedPath();
+            walkedPath.add( input, rootLpe );
 
-        // Create a root LiteralPathElement so that # is useful at the root level
-        MatchedElement rootLpe = new MatchedElement( ROOT_KEY );
-        WalkedPath walkedPath = new WalkedPath();
-        walkedPath.add( input, rootLpe );
+            logger.debug("Applying Shiftr root spec to input data");
+            rootSpec.apply( ROOT_KEY, Optional.of( input ), walkedPath, output, null );
 
-        rootSpec.apply( ROOT_KEY, Optional.of( input ), walkedPath, output, null );
-
-        return output.get( ROOT_KEY );
+            Object result = output.get( ROOT_KEY );
+            logger.info("Shiftr transform completed successfully");
+            return result;
+            
+        } catch (Exception e) {
+            logger.error("Shiftr transform failed, error: {}", e.getMessage(), e);
+            throw new TransformException("Shiftr transform failed: " + e.getMessage(), e);
+        }
     }
 }

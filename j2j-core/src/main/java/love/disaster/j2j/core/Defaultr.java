@@ -18,6 +18,8 @@ package love.disaster.j2j.core;
 import love.disaster.j2j.core.defaultr.Key;
 import love.disaster.j2j.core.exception.SpecException;
 import love.disaster.j2j.core.exception.TransformException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.HashMap;
@@ -171,6 +173,8 @@ import java.util.Map;
  */
 public class Defaultr implements SpecDriven, Transform {
 
+    private static final Logger logger = LoggerFactory.getLogger(Defaultr.class);
+
     public interface WildCards {
         public static final String STAR = "*";
         public static final String OR = "|";
@@ -187,6 +191,10 @@ public class Defaultr implements SpecDriven, Transform {
      */
     @Inject
     public Defaultr( Object spec ) {
+
+        logger.info("Initializing Defaultr transform with spec");
+        logger.debug("Defaultr constructor called with spec type: {}", 
+                    spec != null ? spec.getClass().getSimpleName() : "null");
 
         String rootString = "root";
 
@@ -215,6 +223,8 @@ public class Defaultr implements SpecDriven, Transform {
             }
             arrayRoot = tempKey;
         }
+        
+        logger.info("Defaultr initialization completed successfully");
     }
 
     /**
@@ -226,22 +236,36 @@ public class Defaultr implements SpecDriven, Transform {
     @Override
     public Object transform( Object input ) {
 
-        if ( input == null ) {
-            // if null, assume HashMap
-            input = new HashMap();
-        }
-
-        // TODO : Make copy of the defaultee or like shiftr create a new output object
-        if ( input instanceof List ) {
-            if  ( arrayRoot == null ) {
-                throw new TransformException( "The Spec provided can not handle input that is a top level Json Array." );
+        logger.debug("Starting Defaultr transform, input type: {}", 
+                    input != null ? input.getClass().getSimpleName() : "null");
+        
+        try {
+            if ( input == null ) {
+                logger.debug("Input is null, creating new HashMap");
+                // if null, assume HashMap
+                input = new HashMap();
             }
-            arrayRoot.applyChildren( input );
-        }
-        else {
-            mapRoot.applyChildren( input );
-        }
 
-        return input;
+            // TODO : Make copy of the defaultee or like shiftr create a new output object
+            if ( input instanceof List ) {
+                if  ( arrayRoot == null ) {
+                    logger.error("Defaultr transform failed: spec cannot handle top level JSON Array input");
+                    throw new TransformException( "The Spec provided can not handle input that is a top level Json Array." );
+                }
+                logger.debug("Applying defaults to top-level array input");
+                arrayRoot.applyChildren( input );
+            }
+            else {
+                logger.debug("Applying defaults to map input");
+                mapRoot.applyChildren( input );
+            }
+
+            logger.info("Defaultr transform completed successfully");
+            return input;
+            
+        } catch (Exception e) {
+            logger.error("Defaultr transform failed: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 }

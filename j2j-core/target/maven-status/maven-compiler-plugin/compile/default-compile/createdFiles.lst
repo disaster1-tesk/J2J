@@ -18,7 +18,6 @@ love/disaster/j2j/core/traversr/TraversrException.class
 love/disaster/j2j/core/modifier/function/DateTime$parseDate.class
 love/disaster/j2j/core/Sortr.class
 love/disaster/j2j/core/common/Optional.class
-love/disaster/j2j/demo/ScriptsDemo.class
 love/disaster/j2j/core/modifier/function/Objects$isMap.class
 love/disaster/j2j/core/modifier/function/Math$divideAndRound.class
 love/disaster/j2j/core/common/tree/ArrayMatchedElement.class

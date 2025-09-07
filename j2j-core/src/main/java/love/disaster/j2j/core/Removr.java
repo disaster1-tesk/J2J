@@ -17,6 +17,8 @@ package love.disaster.j2j.core;
 
 import love.disaster.j2j.core.exception.SpecException;
 import love.disaster.j2j.core.spec.RemovrCompositeSpec;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.HashMap;
@@ -182,19 +184,33 @@ import java.util.Map;
  */
 public class Removr implements SpecDriven, Transform {
 
+    private static final Logger logger = LoggerFactory.getLogger(Removr.class);
     private static final String ROOT_KEY = "root";
     private final RemovrCompositeSpec rootSpec;
 
     @Inject
     public Removr( Object spec ) {
+        logger.info("Initializing Removr transform with spec");
+        logger.debug("Removr constructor called with spec type: {}", 
+                    spec != null ? spec.getClass().getSimpleName() : "null");
+                    
         if ( spec == null ){
+            logger.error("Removr initialization failed: spec is null");
             throw new SpecException( "Removr expected a spec of Map type, got 'null'." );
         }
         if ( ! ( spec instanceof Map ) ) {
-            throw new SpecException( "Removr expected a spec of Map type, got " + spec.getClass().getSimpleName() );
+            String errorMsg = "Removr expected a spec of Map type, got " + spec.getClass().getSimpleName();
+            logger.error("Removr initialization failed: {}", errorMsg);
+            throw new SpecException( errorMsg );
         }
 
-        rootSpec = new RemovrCompositeSpec( ROOT_KEY, (Map<String, Object>) spec );
+        try {
+            rootSpec = new RemovrCompositeSpec( ROOT_KEY, (Map<String, Object>) spec );
+            logger.info("Removr initialization completed successfully");
+        } catch (Exception e) {
+            logger.error("Removr initialization failed during spec processing: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     /**
@@ -205,10 +221,23 @@ public class Removr implements SpecDriven, Transform {
     @Override
     public Object transform( Object input ) {
 
-        // Wrap the input in a map to fool the CompositeSpec to recurse itself.
-        Map<String,Object> wrappedMap = new HashMap<>();
-        wrappedMap.put(ROOT_KEY, input);
-        rootSpec.applyToMap( wrappedMap );
-        return input;
+        logger.debug("Starting Removr transform, input type: {}", 
+                    input != null ? input.getClass().getSimpleName() : "null");
+        
+        try {
+            // Wrap the input in a map to fool the CompositeSpec to recurse itself.
+            Map<String,Object> wrappedMap = new HashMap<>();
+            wrappedMap.put(ROOT_KEY, input);
+            
+            logger.debug("Applying Removr spec to wrapped input");
+            rootSpec.applyToMap( wrappedMap );
+            
+            logger.info("Removr transform completed successfully");
+            return input;
+            
+        } catch (Exception e) {
+            logger.error("Removr transform failed: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 }

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J2J Transform Studio</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/material-darker.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/fold/foldcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/fold/foldgutter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/fold/brace-fold.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/fold/foldgutter.min.css">
+</head>
+<body>
+    <!-- Application Shell -->
+    <div class="app">
+        <!-- Navigation Bar -->
+        <nav class="navbar">
+            <div class="navbar-brand">
+                <i class="fas fa-code-branch"></i>
+                <span class="brand-text">J2J Transform Studio</span>
+                <span class="version-badge">v2.0</span>
+            </div>
+            
+            <div class="navbar-controls">
+                <div class="quick-start-selector">
+                    <label for="quickStartBtn">Quick Start:</label>
+                    <button id="quickStartBtn" class="quick-start-btn">
+                        <i class="fas fa-rocket"></i>
+                        <span id="currentOperation">Select Transform</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="quick-start-dropdown" id="quickStartDropdown">
+                        <div class="dropdown-section">
+                            <div class="section-title">Basic Transformations</div>
+                            <div class="example-item" data-operation="chain" data-example="simple-shift">
+                                <div class="example-header">
+                                    <i class="fas fa-exchange-alt"></i>
+                                    <span>Simple Shift</span>
+                                </div>
+                                <div class="example-desc">Basic field reorganization</div>
+                            </div>
+                            <div class="example-item" data-operation="chain" data-example="attribute-reference">
+                                <div class="example-header">
+                                    <i class="fas fa-quote-right"></i>
+                                    <span>Attribute Reference</span>
+                                </div>
+                                <div class="example-desc">Using &1, &2 references in specs</div>
+                            </div>
+                            <div class="example-item" data-operation="chain" data-example="default-values">
+                                <div class="example-header">
+                                    <i class="fas fa-fill"></i>
+                                    <span>Default Values</span>
+                                </div>
+                                <div class="example-desc">Apply default values to fields</div>
+                            </div>
+                            <div class="example-item" data-operation="chain" data-example="identity">
+                                <div class="example-header">
+                                    <i class="fas fa-copy"></i>
+                                    <span>Identity Transformation</span>
+                                </div>
+                                <div class="example-desc">Preserve structure with @ operator</div>
+                            </div>
+                        </div>
+                        <div class="dropdown-section">
+                            <div class="section-title">Array Operations</div>
+                            <div class="example-item" data-operation="chain" data-example="array-handling">
+                                <div class="example-header">
+                                    <i class="fas fa-list"></i>
+                                    <span>Array Handling</span>
+                                </div>
+                                <div class="example-desc">Array element mapping with indexing</div>
+                            </div>
+                            <div class="example-item" data-operation="chain" data-example="array-filtering">
+                                <div class="example-header">
+                                    <i class="fas fa-filter"></i>
+                                    <span>Array Filtering</span>
+                                </div>
+                                <div class="example-desc">Select specific array elements</div>
+                            </div>
+                            <div class="example-item" data-operation="chain" data-example="nested-arrays">
+                                <div class="example-header">
+                                    <i class="fas fa-sitemap"></i>
+                                    <span>Nested Arrays</span>
+                                </div>
+                                <div class="example-desc">Handle complex nested arrays</div>
+                            </div>
+                        </div>
+                        <div class="dropdown-section">
+                            <div class="section-title">Advanced Patterns</div>
+                            <div class="example-item" data-operation="chain" data-example="wildcards">
+                                <div class="example-header">
+                                    <i class="fas fa-asterisk"></i>
+                                    <span>Wildcard Matching</span>
+                                </div>
+                                <div class="example-desc">Pattern-based field matching</div>
+                            </div>
+                            <div class="example-item" data-operation="chain" data-example="complex-nested">
+                                <div class="example-header">
+                                    <i class="fas fa-project-diagram"></i>
+                                    <span>Complex Nesting</span>
+                                </div>
+                                <div class="example-desc">Deep nested structure transformation</div>
+                            </div>
+                            <div class="example-item" data-operation="chain" data-example="multi-operation">
+                                <div class="example-header">
+                                    <i class="fas fa-code-branch"></i>
+                                    <span>Multi-Operation Chain</span>
+                                </div>
+                                <div class="example-desc">Combine shift, default, and remove</div>
+                            </div>
+                        </div>
+                        <div class="dropdown-section">
+                            <div class="section-title">Special Data Types</div>
+                            <div class="example-item" data-operation="chain" data-example="boolean-values">
+                                <div class="example-header">
+                                    <i class="fas fa-toggle-on"></i>
+                                    <span>Boolean Values</span>
+                                </div>
+                                <div class="example-desc">Handle boolean data types</div>
+                            </div>
+                            <div class="example-item" data-operation="chain" data-example="null-values">
+                                <div class="example-header">
+                                    <i class="fas fa-ban"></i>
+                                    <span>Null Values</span>
+                                </div>
+                                <div class="example-desc">Preserve null values in transformation</div>
+                            </div>
+                            <div class="example-item" data-operation="chain" data-example="number-values">
+                                <div class="example-header">
+                                    <i class="fas fa-hashtag"></i>
+                                    <span>Number Values</span>
+                                </div>
+                                <div class="example-desc">Handle various number formats</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="navbar-actions">
+                    <button id="toolsBtn" class="nav-btn" title="External Tools">
+                        <i class="fas fa-tools"></i>
+                        <span>Tools</span>
+                    </button>
+                    <button id="settingsBtn" class="nav-btn" title="Settings">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hidden operation type for compatibility -->
+        <input type="hidden" id="operationType" value="chain">
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Transform Workspace -->
+            <div class="workspace">
+                <!-- Input Panel -->
+                <div class="editor-panel input-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="fas fa-file-import"></i>
+                            <span>Input JSON</span>
+                        </div>
+                        <div class="panel-actions">
+                            <button class="panel-btn" id="formatInputBtn" title="Format JSON">
+                                <i class="fas fa-indent"></i>
+                            </button>
+                            <button class="panel-btn" id="clearInputBtn" title="Clear">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <div class="validation-status" id="inputValidation">
+                                <i class="fas fa-circle-check validation-icon"></i>
+                                <span class="validation-text">Ready</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-content">
+                        <textarea id="inputEditor" placeholder="Enter your JSON data here..."></textarea>
+                        <div class="validation-message" id="inputValidationMessage"></div>
+                    </div>
+                </div>
+
+                <!-- Transform Panel -->
+                <div class="editor-panel transform-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="fas fa-magic"></i>
+                            <span>Transform Specification</span>
+                        </div>
+                        <div class="panel-actions">
+                            <button class="panel-btn" id="formatSpecBtn" title="Format Spec">
+                                <i class="fas fa-indent"></i>
+                            </button>
+                            <button class="panel-btn" id="clearSpecBtn" title="Clear">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <div class="validation-status" id="specValidation">
+                                <i class="fas fa-circle-check validation-icon"></i>
+                                <span class="validation-text">Ready</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-content">
+                        <textarea id="specEditor" placeholder="Enter your transformation specification..."></textarea>
+                        <div class="validation-message" id="specValidationMessage"></div>
+                    </div>
+                    
+                    <!-- Transform Controls -->
+                    <div class="transform-controls">
+                        <button id="transformBtn" class="transform-btn primary">
+                            <i class="fas fa-play"></i>
+                            <span>Transform</span>
+                        </button>
+                        <div class="control-group">
+                            <label class="switch">
+                                <input type="checkbox" id="autoTransform">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="control-label">Auto Transform</span>
+                        </div>
+                        <div class="performance-indicator" id="performanceInfo">
+                            <i class="fas fa-clock"></i>
+                            <span id="executionTime">0ms</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Output Panel -->
+                <div class="editor-panel output-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="fas fa-file-export"></i>
+                            <span>Output Result</span>
+                        </div>
+                        <div class="panel-actions">
+                            <button class="panel-btn" id="copyOutputBtn" title="Copy Result">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button class="panel-btn" id="downloadBtn" title="Download">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <button class="panel-btn" id="toggleViewBtn" title="Toggle View">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <div class="validation-status" id="outputValidation">
+                                <i class="fas fa-circle-check validation-icon"></i>
+                                <span class="validation-text">Ready</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-content">
+                        <textarea id="outputEditor" readonly placeholder="Transformed result will appear here..."></textarea>
+                        <div class="tree-view" id="treeView" style="display: none;"></div>
+                        <div class="validation-message" id="outputValidationMessage"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-left">
+                <div class="status-item">
+                    <i class="fas fa-info-circle"></i>
+                    <span id="statusMessage">Ready to transform</span>
+                </div>
+            </div>
+            <div class="status-right">
+                <div class="status-item" id="complexityIndicator">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Complexity: Low</span>
+                </div>
+                <div class="status-item" id="validationCount">
+                    <i class="fas fa-check-circle"></i>
+                    <span>All Valid</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Tools Modal -->
+    <div id="toolsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-tools"></i> External Tools</h3>
+                <button class="modal-close" id="closeToolsModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="tools-grid">
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <div class="tool-info">
+                            <h4>Beetl Template Engine</h4>
+                            <p>Powerful Java template engine for data transformation</p>
+                            <a href="http://ibeetl.com/beetlonline/" target="_blank" class="tool-link">
+                                <i class="fas fa-external-link-alt"></i>
+                                Open Beetl Online
+                            </a>
+                        </div>
+                    </div>
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="tool-info">
+                            <h4>JSONata Query Language</h4>
+                            <p>Sophisticated query and transformation language for JSON</p>
+                            <a href="https://try.jsonata.org/" target="_blank" class="tool-link">
+                                <i class="fas fa-external-link-alt"></i>
+                                Open JSONata Exerciser
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-cog"></i> Settings</h3>
+                <button class="modal-close" id="closeSettingsModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-section">
+                    <h4>Editor Preferences</h4>
+                    <div class="setting-item">
+                        <label>Theme:</label>
+                        <select id="themeSelect">
+                            <option value="material-darker">Material Dark</option>
+                            <option value="default">Light</option>
+                            <option value="monokai">Monokai</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>Font Size:</label>
+                        <select id="fontSizeSelect">
+                            <option value="12">12px</option>
+                            <option value="14" selected>14px</option>
+                            <option value="16">16px</option>
+                            <option value="18">18px</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h4>Validation</h4>
+                    <div class="setting-item">
+                        <label class="switch">
+                            <input type="checkbox" id="realTimeValidation" checked>
+                            <span class="slider"></span>
+                        </label>
+                        <span>Real-time validation</span>
+                    </div>
+                    <div class="setting-item">
+                        <label class="switch">
+                            <input type="checkbox" id="showSuggestions" checked>
+                            <span class="slider"></span>
+                        </label>
+                        <span>Show improvement suggestions</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Processing transformation...</div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notifications" class="notifications-container"></div>
+
+    <script src="/js/main.js"></script>
+</body>
+</html>

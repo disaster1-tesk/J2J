@@ -17,6 +17,8 @@ package love.disaster.j2j.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -32,6 +34,7 @@ import java.util.Map;
  */
 public class JsonUtils {
 
+    private static final Logger logger = LoggerFactory.getLogger(JsonUtils.class);
     private static final JsonUtil util = new JsonUtilImpl();
 
     /**
@@ -54,7 +57,10 @@ public class JsonUtils {
      */
     @Deprecated
     public static void removeRecursive( Object json, String keyToRemove ) {
+        logger.debug("Removing key '{}' recursively from JSON object", keyToRemove);
+        
         if ( ( json == null ) || ( keyToRemove == null ) ) {
+            logger.debug("Skipping removal - json or keyToRemove is null");
             return;
         }
         if ( json instanceof Map ) {
@@ -94,6 +100,7 @@ public class JsonUtils {
      * @return Maps-of-Maps
      */
     public static Map<String, Object> javason( String javason ) {
+        logger.debug("Converting javason string to JSON map");
 
         String json = javason.replace( '\'', '"' );
 
@@ -228,6 +235,7 @@ public class JsonUtils {
      * @return deep copy of the incoming obj
      */
     public static Object cloneJson( Object obj ) {
+        logger.debug("Cloning JSON object of type: {}", obj != null ? obj.getClass().getSimpleName() : "null");
         // use the "configured" util for the serialize to String part
         return util.cloneJson( obj );
     }
@@ -246,13 +254,24 @@ public class JsonUtils {
     @SuppressWarnings("unchecked")
     @Deprecated
     public static <T> T navigate(Object source, Object... paths) throws NullPointerException, UnsupportedOperationException {
+        logger.debug("Navigating JSON with {} path segments", paths != null ? paths.length : 0);
+        
         Object destination = source;
         for (Object path : paths) {
-            if(destination == null) throw new NullPointerException("Navigation not possible on null object");
+            if(destination == null) {
+                logger.error("Navigation failed - encountered null object at path: {}", path);
+                throw new NullPointerException("Navigation not possible on null object");
+            }
             if(destination instanceof Map) destination = ((Map) destination).get(path);
             else if(path instanceof Integer && destination instanceof List) destination = ((List) destination).get((Integer)path);
-            else throw new UnsupportedOperationException("Navigation supports only Map and List source types and non-null String and Integer path types");
+            else {
+                logger.error("Navigation failed - unsupported source type: {} or path type: {}", 
+                           destination.getClass().getSimpleName(), path != null ? path.getClass().getSimpleName() : "null");
+                throw new UnsupportedOperationException("Navigation supports only Map and List source types and non-null String and Integer path types");
+            }
         }
+        
+        logger.debug("Navigation completed successfully");
         return (T) destination;
     }
 }

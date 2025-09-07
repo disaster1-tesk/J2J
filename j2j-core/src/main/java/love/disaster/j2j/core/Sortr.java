@@ -15,6 +15,9 @@
  */
 package love.disaster.j2j.core;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.*;
 
 /**
@@ -27,6 +30,8 @@ import java.util.*;
  */
 public class Sortr implements Transform {
 
+    private static final Logger logger = LoggerFactory.getLogger(Sortr.class);
+
     /**
      * Makes a "sorted" copy of the input JSON for human readability.
      *
@@ -34,7 +39,17 @@ public class Sortr implements Transform {
      */
     @Override
     public Object transform( Object input ) {
-        return sortJson( input );
+        logger.debug("Starting Sortr transform, input type: {}", 
+                    input != null ? input.getClass().getSimpleName() : "null");
+        
+        try {
+            Object result = sortJson( input );
+            logger.info("Sortr transform completed successfully");
+            return result;
+        } catch (Exception e) {
+            logger.error("Sortr transform failed: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     @SuppressWarnings( "unchecked" )

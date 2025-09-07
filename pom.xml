@@ -13,6 +13,7 @@
         <module>j2j-core</module>
         <module>j2j-cli</module>
         <module>j2j-complete</module>
+        <module>j2j-web</module>
     </modules>
 
     <properties>
