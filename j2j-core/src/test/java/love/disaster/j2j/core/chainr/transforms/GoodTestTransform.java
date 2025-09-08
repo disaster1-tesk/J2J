@@ -20,7 +20,7 @@ package love.disaster.j2j.core.chainr.transforms;
 import love.disaster.j2j.core.SpecDriven;
 import love.disaster.j2j.core.Transform;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 public class GoodTestTransform implements SpecDriven, Transform {
 

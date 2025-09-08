@@ -1,0 +1,8 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+      "*": "&"
+    }
+  }
+  // Missing closing bracket - this is intentionally malformed

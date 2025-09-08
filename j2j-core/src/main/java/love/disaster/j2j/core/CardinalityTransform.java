@@ -20,7 +20,7 @@ import love.disaster.j2j.core.common.Optional;
 import love.disaster.j2j.core.common.tree.WalkedPath;
 import love.disaster.j2j.core.exception.SpecException;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Map;
 
 /**

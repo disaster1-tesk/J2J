@@ -20,6 +20,7 @@ sleep 3
 if pgrep -f "j2j-web" > /dev/null; then
     echo "J2J Web Validator started successfully!"
     echo "Access the application at: http://localhost:8080"
+    echo "You can also try the online version at: http://www.disaster.love/j2j/"
 else
     echo "Failed to start J2J Web Validator"
     exit 1

@@ -2,6 +2,9 @@
 
 Factory classes for creating transformation chains in the J2J library.
 
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![Java 17+](https://img.shields.io/badge/java-17+-blue.svg)](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html)
+
 ## Overview
 
 This module provides factory classes that make it easier to create and configure transformation chains using the j2j-core library. It serves as a bridge between the core transformation logic and other modules that need to use these transformations, simplifying the process of creating complex transformation workflows.
@@ -111,3 +114,72 @@ mvn test -pl j2j-complete
 - Factory methods perform specification parsing, so reuse Chainr instances when processing multiple documents with the same specification
 - Complex specifications may take time to parse, so consider caching for frequently used transformations
 - The created Chainr instances are optimized for performance and can be safely used in multi-threaded environments
+
+## API Reference
+
+### ChainrFactory
+```java
+public class ChainrFactory {
+    public static Chainr createChainr(Object spec)
+    public static Chainr createChainr(String specJson)
+    public static Chainr createDefaultChainr()
+}
+```
+
+### Exception Handling
+All factory methods may throw:
+- `SpecException` - For invalid specification formats
+- `TransformException` - For transformation-related errors
+
+## Configuration
+
+The factory can be configured through:
+1. System properties for default settings
+2. Custom ChainrInstantiator implementations
+3. Dependency injection frameworks
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Invalid specification format**: Ensure specifications follow the expected JSON structure
+2. **ClassNotFoundException**: Verify all dependencies are properly included
+3. **Performance issues**: For complex chains, consider breaking into smaller transformations
+
+### Debugging Tips
+
+1. Enable debug logging to see detailed chain creation steps
+2. Test factory methods with simple specifications first
+3. Use the web interface to visually debug complex transformations
+
+## Integration Examples
+
+### Spring Framework
+```java
+@Configuration
+public class JoltConfig {
+    
+    @Bean
+    public ChainrFactory chainrFactory() {
+        return new ChainrFactory();
+    }
+}
+```
+
+### Guice
+```java
+public class JoltModule extends AbstractModule {
+    @Override
+    protected void configure() {
+        bind(ChainrFactory.class).toInstance(new ChainrFactory());
+    }
+}
+```
+
+## Future Enhancements
+
+Planned improvements for this module:
+1. Additional factory methods for common transformation patterns
+2. Configuration-based chain creation
+3. Performance monitoring and metrics
+4. Enhanced error handling and reporting

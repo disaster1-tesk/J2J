@@ -172,7 +172,7 @@ public class ModifierTest {
         testCases.add( new Object[]{"/json/modifier/functions/labelsLookupTest.json", TemplatrTestCase.DEFAULTR} );
         testCases.add( new Object[]{"/json/modifier/functions/valueTests.json", TemplatrTestCase.OVERWRITR }  );
         testCases.add( new Object[]{"/json/modifier/functions/enhancedFunctionsTest.json", TemplatrTestCase.OVERWRITR }  );
-        testCases.add( new Object[]{"/json/modifier/functions/enhancedScriptsTest.json", TemplatrTestCase.OVERWRITR }  );
+        testCases.add( new Object[]{"/json/modifier/functions/enhancedFunctionsTest.json", TemplatrTestCase.OVERWRITR }  );
 
         return testCases.iterator();
     }

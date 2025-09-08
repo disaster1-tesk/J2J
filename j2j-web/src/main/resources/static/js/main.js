@@ -196,6 +196,18 @@ function loadExample(operation, example) {
         case 'number-values':
             loadNumberValuesExample();
             break;
+        case 'math-functions':
+            loadMathFunctionsExample();
+            break;
+        case 'script-functions':
+            loadScriptFunctionsExample();
+            break;
+        case 'template-functions':
+            loadTemplateFunctionsExample();
+            break;
+        case 'jsonata-functions':
+            loadJsonataFunctionsExample();
+            break;
         default:
             // Load chain example as default
             loadChainExample();
@@ -228,6 +240,28 @@ function handleEditorChange() {
     validateSpec();
 }
 
+// Function to get the base path for API calls
+function getBasePath() {
+    // Get the current path
+    const currentPath = window.location.pathname;
+    
+    // If we're at the root or a simple path, use relative paths
+    if (currentPath === '/' || currentPath.split('/').length <= 2) {
+        return '';
+    }
+    
+    // Otherwise, use the current path as base (for cases like /j2j/)
+    const pathParts = currentPath.split('/').filter(part => part.length > 0);
+    if (pathParts.length > 0) {
+        return pathParts[0] + '/';
+    }
+    
+    return '';
+}
+
+// Get base path for API calls
+const basePath = getBasePath();
+
 // Validate input JSON
 function validateInput() {
     const input = inputEditor.getValue();
@@ -236,8 +270,8 @@ function validateInput() {
         return;
     }
     
-    // Send validation request to backend
-    fetch('/api/transform/validate/json', {
+    // Send validation request to backend using relative path
+    fetch('./api/transform/validate/json', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -281,8 +315,8 @@ function validateSpec() {
         chainSpec: spec
     };
     
-    // Send validation request to backend
-    fetch('/api/transform/validate/spec', {
+    // Send validation request to backend using relative path
+    fetch('./api/transform/validate/spec', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -387,8 +421,8 @@ function performTransform() {
         requestData.input = input;
     }
     
-    // Send transform request to backend
-    fetch('/api/transform', {
+    // Send transform request to backend using relative path
+    fetch('./api/transform', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -1126,6 +1160,115 @@ function loadNumberValuesExample() {
       "integer": "intResult",
       "float": "floatResult",
       "negative": "negResult"
+    }
+  }
+]`;
+    
+    inputEditor.setValue(input);
+    specEditor.setValue(spec);
+}
+
+// Load math functions example
+function loadMathFunctionsExample() {
+    const input = `{
+  "numbers": [1, 5, 3, 9, 2],
+  "values": [10, -5, 3.5, 8],
+  "data": {
+    "price1": 25.99,
+    "price2": 15.50
+  }
+}`;
+    
+    const spec = `[
+  {
+    "operation": "modify-overwrite-beta",
+    "spec": {
+      "maxValue": ["=max(@(1,numbers))"],
+      "minValue": ["=min(@(1,values))"],
+      "absValue": ["=abs(-7)"],
+      "sumIntegers": ["=intSum(10, 5, 3)"],
+      "sumDoubles": ["=doubleSum(@(1,data.price1), @(1,data.price2))"],
+      "difference": ["=intSubtract(20, 8)"],
+      "quotient": ["=divide(15, 3)"],
+      "roundedResult": ["=divideAndRound(2, 10, 3)"]
+    }
+  }
+]`;
+    
+    inputEditor.setValue(input);
+    specEditor.setValue(spec);
+}
+
+// Load script functions example
+function loadScriptFunctionsExample() {
+    const input = `{
+  "user": {
+    "name": "John Doe",
+    "age": 30,
+    "scores": [85, 92, 78, 96]
+  }
+}`;
+    
+    const spec = `[
+  {
+    "operation": "modify-overwrite-beta",
+    "spec": {
+      "user": {
+        "nameUpper": ["=javascript('arg1.toUpperCase()', @(1,name))"],
+        "ageNextYear": ["=javascript('arg1 + 1', @(1,age))"],
+        "avgScore": ["=javascript('arg1.reduce((a,b) => a + b, 0) / arg1.length', @(1,scores))"]
+      }
+    }
+  }
+]`;
+    
+    inputEditor.setValue(input);
+    specEditor.setValue(spec);
+}
+
+// Load template functions example
+function loadTemplateFunctionsExample() {
+    const input = `{
+  "product": {
+    "name": "Laptop",
+    "price": 1299.99,
+    "brand": "TechCorp"
+  }
+}`;
+    
+    const spec = `[
+  {
+    "operation": "modify-overwrite-beta",
+    "spec": {
+      "product": {
+        "description": ["=beetl('The \${name} from \${brand} costs \$\${price}', @(1,&))"],
+        "formattedPrice": ["=beetl('\$\${price?number,#.##}', @(1,&))"]
+      }
+    }
+  }
+]`;
+    
+    inputEditor.setValue(input);
+    specEditor.setValue(spec);
+}
+
+// Load JSONata functions example
+function loadJsonataFunctionsExample() {
+    const input = `{
+  "orders": [
+    {"product": "Laptop", "price": 1200, "quantity": 1},
+    {"product": "Mouse", "price": 25, "quantity": 2},
+    {"product": "Keyboard", "price": 75, "quantity": 1}
+  ]
+}`;
+    
+    const spec = `[
+  {
+    "operation": "modify-overwrite-beta",
+    "spec": {
+      "totalValue": ["=jsonata('\$sum(orders.price * orders.quantity)')", ""],
+      "expensiveItems": ["=jsonata('orders[price > 100]')", ""],
+      "itemCount": ["=jsonata('\$count(orders)')", ""]
     }
   }
 ]`;

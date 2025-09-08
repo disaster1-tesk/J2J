@@ -2,6 +2,11 @@
 
 Web interface for interactive JSON transformations using the J2J library.
 
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![Java 17+](https://img.shields.io/badge/java-17+-blue.svg)](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html)
+[![Spring Boot](https://img.shields.io/badge/spring--boot-2.7.18-blue.svg)](https://spring.io/projects/spring-boot)
+[![Docker](https://img.shields.io/badge/docker-latest-blue.svg)](https://www.docker.com/)
+
 ## Overview
 
 This module provides a web-based user interface for experimenting with JSON transformations. It allows users to:
@@ -14,6 +19,8 @@ This module provides a web-based user interface for experimenting with JSON tran
 
 The web interface is particularly useful for developers who want to experiment with JSON transformations without writing code, or for teams that need to collaborate on transformation specifications.
 
+You can try out the J2J web interface online at [http://www.disaster.love/j2j/](http://www.disaster.love/j2j/).
+
 ## Features
 
 - **Interactive JSON Editor**: Syntax-highlighted editors for both input data and transformation specifications
@@ -24,6 +31,7 @@ The web interface is particularly useful for developers who want to experiment w
 - **Performance Metrics**: Transformation timing and complexity analysis
 - **Responsive Design**: Works on desktop and mobile devices with light/dark themes
 - **Integrated Tools**: Access to additional tools like Beetl Online and JSONata Exerciser
+- **Template Engine Support**: Integration with Beetl and JSONata template engines
 
 ## Technology Stack
 
@@ -86,9 +94,25 @@ java -jar target/j2j-web-1.0-SNAPSHOT.jar
 java -jar target/j2j-web-1.0-SNAPSHOT.jar --server.port=8081
 ```
 
+### Docker Deployment
+
+```bash
+# Build the project
+mvn clean package -DskipTests
+
+# Build the Docker image
+docker build -t j2j-web:latest .
+
+# Run the container
+docker run -p 8080:8080 j2j-web:latest
+
+# Or use Docker Compose from project root
+cd .. && docker-compose up -d
+```
+
 ### Using the Web Interface
 
-1. **Open the Application**: Navigate to `http://localhost:8080` in your browser
+1. **Open the Application**: Navigate to `http://localhost:8080` in your browser or try the online version at [http://www.disaster.love/j2j/](http://www.disaster.love/j2j/)
 2. **Enter JSON Data**: Type or paste your input JSON in the left editor
 3. **Define Specification**: Create your transformation specification in the middle editor
 4. **View Results**: See the transformation result in the right editor
@@ -259,3 +283,215 @@ The web interface can be integrated with:
 - Monitoring tools for performance tracking
 - Authentication systems for access control
 - External APIs for enhanced functionality
+
+## API Documentation
+
+### TransformRequest DTO
+```java
+public class TransformRequest {
+    private String input;       // Input JSON string
+    private String spec;        // Transformation specification
+    private String operation;   // Operation type (shift, default, etc.)
+}
+```
+
+### TransformResponse DTO
+```java
+public class TransformResponse {
+    private String result;      // Transformation result
+    private boolean success;    // Success flag
+    private String error;       // Error message if any
+    private long executionTime; // Execution time in milliseconds
+}
+```
+
+### ValidationResult DTO
+```java
+public class ValidationResult {
+    private boolean valid;      // Validation result
+    private String message;     // Validation message
+    private String details;     // Detailed error information
+}
+```
+
+## Example Transformations
+
+### Shift Operation
+Input:
+```json
+{
+  "user": {
+    "name": "John Doe",
+    "age": 35
+  }
+}
+```
+
+Specification:
+```json
+{
+  "user": {
+    "name": "person.name",
+    "age": "person.age"
+  }
+}
+```
+
+Result:
+```json
+{
+  "person": {
+    "name": "John Doe",
+    "age": 35
+  }
+}
+```
+
+### JSONata in Modify Operations
+The web interface includes an example demonstrating how to use JSONata functions within modify transformations. This example shows how to:
+- Calculate statistics from employee data
+- Filter and group information using JSONata expressions
+- Transform complex nested structures
+
+To access this example:
+1. Open the web interface at [http://www.disaster.love/j2j/](http://www.disaster.love/j2j/)
+2. Select "JSONata in Modify Transformation" from the examples dropdown
+3. Review the input data, specification, and expected output
+
+The example demonstrates advanced JSONata functions like:
+- `$avg()`, `$max()`, `$min()` for statistical calculations
+- Filtering with expressions like `employees[salary > 80000]`
+- Grouping with expressions like `employees{department: $count}`
+- String operations and complex transformations
+
+### Default Operation
+Input:
+```json
+{
+  "user": {
+    "name": "John Doe"
+  }
+}
+```
+
+Specification:
+```json
+{
+  "user": {
+    "name": "Anonymous",
+    "active": true
+  }
+}
+```
+
+Result:
+```json
+{
+  "user": {
+    "name": "John Doe",
+    "active": true
+  }
+}
+```
+
+## Template Engine Integration
+
+The web interface supports advanced template engines:
+
+### Beetl Templates
+```javascript
+// Using Beetl template functions
+var result = beetl(template, data);
+```
+
+### JSONata Expressions
+```javascript
+// Using JSONata query language
+var result = jsonata(expression, data);
+```
+
+## Performance Monitoring
+
+The application includes built-in performance monitoring:
+- Execution time tracking for transformations
+- Memory usage monitoring
+- Request/response logging
+- Error rate tracking
+
+To enable detailed performance logging:
+```bash
+java -jar target/j2j-web-1.0-SNAPSHOT.jar --logging.level.love.disaster.j2j.web=DEBUG
+```
+
+## Deployment
+
+### Docker Deployment
+Create a Dockerfile:
+```dockerfile
+FROM openjdk:8-jre-alpine
+COPY target/j2j-web-1.0-SNAPSHOT.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "/app.jar"]
+```
+
+Build and run:
+```bash
+docker build -t j2j-web .
+docker run -p 8080:8080 j2j-web
+```
+
+### Cloud Deployment
+The application can be deployed to:
+- AWS Elastic Beanstalk
+- Google Cloud Run
+- Azure App Service
+- Heroku
+- Kubernetes clusters
+
+## Monitoring and Logging
+
+### Health Checks
+- `GET /actuator/health` - Application health status
+- `GET /actuator/info` - Application information
+- `GET /actuator/metrics` - Application metrics
+
+### Log Configuration
+Customize logging in `src/main/resources/logback-spring.xml`:
+```xml
+<configuration>
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/j2j-web.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <root level="INFO">
+        <appender-ref ref="FILE" />
+    </root>
+</configuration>
+```
+
+## Contributing to the Web Interface
+
+To contribute to the web interface:
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes to the frontend or backend
+4. Test thoroughly
+5. Submit a pull request
+
+### Frontend Development Guidelines
+- Follow Bootstrap 5 conventions
+- Use responsive design principles
+- Ensure cross-browser compatibility
+- Optimize for performance
+- Maintain consistent styling
+
+### Backend Development Guidelines
+- Follow REST API best practices
+- Implement proper error handling
+- Write comprehensive unit tests
+- Document API endpoints
+- Maintain security best practices

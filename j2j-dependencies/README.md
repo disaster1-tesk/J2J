@@ -2,6 +2,9 @@
 
 Dependency management module for the J2J project.
 
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![Maven](https://img.shields.io/badge/maven-3.6+-blue.svg)](https://maven.apache.org/)
+
 ## Overview
 
 This module centralizes dependency management for all J2J modules. It defines versions and scopes for all third-party libraries used across the project, ensuring consistency and avoiding version conflicts. By using this module as a dependency management source, all J2J modules can share the same versions of libraries, making maintenance easier and reducing the risk of compatibility issues.
@@ -11,7 +14,7 @@ This module centralizes dependency management for all J2J modules. It defines ve
 ### Core Dependencies
 - **Jackson** (2.13.4) - JSON processing library for parsing and generating JSON
 - **SLF4J** (1.7.36) - Simple Logging Facade for Java, providing a common interface for various logging frameworks
-- **javax.inject** (1) - Standard annotations for dependency injection
+- **jakarta.inject** (2.0.1) - Standard annotations for dependency injection
 
 ### CLI Dependencies
 - **argparse4j** (0.4.4) - Command-line argument parser for Java
@@ -154,3 +157,49 @@ As the project evolves, consider:
 2. Removing unused dependencies to reduce project complexity
 3. Regularly reviewing dependency versions for security updates
 4. Evaluating new libraries that could enhance project capabilities
+
+## Dependency Matrix
+
+| Category | Dependency | Version | Scope |
+|----------|------------|---------|-------|
+| Core | Jackson Databind | 2.13.4 | compile |
+| Core | Jackson Core | 2.13.4 | compile |
+| Core | SLF4J API | 1.7.36 | compile |
+| Core | jakarta.inject | 2.0.1 | compile |
+| CLI | argparse4j | 0.4.4 | compile |
+| Test | TestNG | 6.8.21 | test |
+| Test | Guava | 29.0-jre | test |
+| Test | Commons Lang3 | 3.4 | test |
+| Optional | Beetl | 3.15.0.RELEASE | optional |
+| Optional | ANTLR Runtime | 4.12.0 | optional |
+| Optional | JSONata4Java | 2.4.1 | optional |
+
+## Version Compatibility
+
+This module ensures compatibility across all J2J modules by:
+1. Pinning specific versions of all dependencies
+2. Managing transitive dependency versions
+3. Providing a consistent baseline for all modules
+4. Enabling easy upgrades through property changes
+
+## Security Scanning
+
+Regular security scanning is performed using:
+1. OWASP Dependency Check
+2. Maven Enforcer Plugin
+3. Manual review of release notes
+
+To run security checks:
+```bash
+mvn dependency-check:check
+mvn enforcer:enforce
+```
+
+## Release Management
+
+When preparing a release:
+1. Review all dependency versions for stability
+2. Check for any deprecated dependencies
+3. Update version properties as needed
+4. Run full test suite with dependency analysis
+5. Document any breaking changes in release notes

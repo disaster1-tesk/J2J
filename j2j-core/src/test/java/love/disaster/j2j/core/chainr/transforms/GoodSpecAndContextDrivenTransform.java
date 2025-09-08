@@ -20,7 +20,7 @@ package love.disaster.j2j.core.chainr.transforms;
 import love.disaster.j2j.core.ContextualTransform;
 import love.disaster.j2j.core.SpecDriven;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Map;
 
 public class GoodSpecAndContextDrivenTransform implements SpecDriven, ContextualTransform {

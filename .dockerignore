@@ -1,0 +1,42 @@
+# Build artifacts
+target/
+j2j-cli/target/
+j2j-core/target/
+j2j-complete/target/
+j2j-dependencies/target/
+j2j-web/target/
+
+# IDE files
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git files
+.git/
+.gitignore
+
+# Maven files
+.flattened-pom.xml
+
+# Log files
+logs/
+*.log
+
+# Test files
+src/test/
+
+# Documentation (except for what's needed in container)
+docs/
+*.md
+!README.md
+!DEPLOYMENT.md
+
+# Exclude Docker files themselves
+Dockerfile
+docker-compose.yml
+.dockerignore

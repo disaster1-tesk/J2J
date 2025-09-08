@@ -2,18 +2,54 @@
 
 The core module of the J2J library containing all the fundamental JSON transformation logic and utilities.
 
+[![Maven Central](https://img.shields.io/maven-central/v/love.disaster/j2j-core.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22love.disaster%22%20AND%20a:%22j2j-core%22)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![Java 17+](https://img.shields.io/badge/java-17+-blue.svg)](https://www.oracle.com/java/technologies/javase/javase-jdk17-downloads.html)
+
 ## Overview
 
 This module provides the core transformation capabilities including:
 
-- **Shiftr**: Reposition key-value pairs in JSON data according to a specification
-- **Defaultr**: Apply default values to JSON data where values are missing
-- **Removr**: Remove key-value pairs from JSON data based on patterns
-- **Sortr**: Sort keys in JSON data alphabetically
-- **Chainr**: Chain multiple transformations together for complex operations
-- **Modifier**: Apply custom functions to JSON data values
+- **[Shiftr](#shiftr)**: Reposition key-value pairs in JSON data according to a specification
+- **[Defaultr](#defaultr)**: Apply default values to JSON data where values are missing
+- **[Removr](#removr)**: Remove key-value pairs from JSON data based on patterns
+- **[Sortr](#sortr)**: Sort keys in JSON data alphabetically
+- **[Chainr](#chainr)**: Chain multiple transformations together for complex operations
+- **[Modifier](#modifier)**: Apply custom functions to JSON data values
 
-## Key Classes
+## 🚀 Quick Start
+
+### Maven Dependency
+
+```xml
+<dependency>
+    <groupId>love.disaster</groupId>
+    <artifactId>j2j-core</artifactId>
+    <version>1.0-SNAPSHOT</version>
+</dependency>
+```
+
+### Simple Usage
+
+```java
+import love.disaster.j2j.core.chainr.Chainr;
+import love.disaster.j2j.core.utils.JsonUtils;
+
+// Create a transformation specification
+Object spec = JsonUtils.jsonToObject("{ \"*\": \"&\" }");
+
+// Create a Chainr instance
+Chainr chainr = Chainr.fromSpec(spec);
+
+// Transform JSON data
+Object input = JsonUtils.jsonToObject("{ \"foo\": \"bar\" }");
+Object output = chainr.transform(input);
+
+// Convert back to JSON string
+String result = JsonUtils.toJsonString(output);
+```
+
+## 🔧 Core Transformations
 
 ### Shiftr
 Main class for shifting operations. It allows you to move data from one location in a JSON document to another.
@@ -68,61 +104,24 @@ Modifier modifier = new Modifier(spec);
 Object transformed = modifier.transform(input);
 ```
 
-## Dependencies
+## 📚 Documentation
+
+- [User Guide](../docs/USER_GUIDE.md) - Comprehensive usage guide
+- [API Reference](../docs/REFERENCE.md) - Complete technical reference
+- [Examples](../docs/EXAMPLES.md) - Practical use cases
+- [Tutorials](../docs/tutorials/) - Step-by-step learning guides
+
+## 📦 Dependencies
 
 - **Jackson** (2.13.4) - JSON processing
 - **SLF4J** (1.7.36) - Logging API
-- **javax.inject** (1) - Dependency injection annotations
+- **jakarta.inject** (2.0.1) - Dependency injection annotations
 - **Optional script engines**:
   - Beetl (3.15.0.RELEASE) - Template engine
   - ANTLR (4.12.0) - Parser generator
   - JSONata4Java (2.4.1) - JSON query and transformation language
 
-## Usage Examples
-
-### Simple Transformation
-```java
-// Example of using Shiftr transformation
-String inputJson = "{ \"user\": { \"name\": \"John\", \"age\": 30 } }";
-String specJson = "{ \"user\": { \"name\": \"personName\" } }";
-
-Object input = JsonUtils.jsonToObject(inputJson);
-Object spec = JsonUtils.jsonToObject(specJson);
-
-Shiftr shiftr = new Shiftr(spec);
-Object transformed = shiftr.transform(input);
-String result = JsonUtils.toJsonString(transformed);
-// Result: { "personName": "John" }
-```
-
-### Chained Transformations
-```java
-// Example of chaining multiple transformations
-String specJson = "[" +
-    "{ \"operation\": \"shift\", \"spec\": { \"user\": { \"name\": \"personName\" } } }," +
-    "{ \"operation\": \"default\", \"spec\": { \"personName\": \"Anonymous\" } }" +
-    "]";
-
-Object spec = JsonUtils.jsonToObject(specJson);
-Chainr chainr = Chainr.fromSpec(spec);
-Object transformed = chainr.transform(input);
-```
-
-## Package Structure
-
-- `love.disaster.j2j.core` - Main transformation classes (Shiftr, Defaultr, etc.)
-- `love.disaster.j2j.core.cardinality` - Cardinality transformation utilities
-- `love.disaster.j2j.core.chainr` - Chainr implementation details
-- `love.disaster.j2j.core.common` - Common utilities and base classes
-- `love.disaster.j2j.core.defaultr` - Defaultr implementation details
-- `love.disaster.j2j.core.exception` - Custom exceptions
-- `love.disaster.j2j.core.modifier` - Modifier implementation details
-- `love.disaster.j2j.core.shiftr` - Shiftr implementation details
-- `love.disaster.j2j.core.spec` - Specification handling
-- `love.disaster.j2j.core.traversr` - Tree traversal utilities
-- `love.disaster.j2j.core.utils` - Core utilities
-
-## Testing
+## 🧪 Testing
 
 The module includes comprehensive unit tests to ensure reliability and correctness of transformations.
 
@@ -134,22 +133,20 @@ mvn test -pl j2j-core
 mvn test -pl j2j-core -Dtest=ShiftrTest
 ```
 
-## Performance Considerations
+## 🏗️ Building
 
-- Reuse transformation instances when processing multiple documents with the same specification
-- Chainr instances are thread-safe and can be reused across threads
-- For high-performance scenarios, consider using the streaming API when available
+```bash
+# Build the module
+mvn clean install -pl j2j-core
 
-## Extending Functionality
+# Package the module
+mvn clean package -pl j2j-core
+```
 
-The library is designed to be extensible:
+## 🤝 Contributing
 
-1. Custom transformations can implement the `Transform` interface
-2. Custom modifier functions can extend the `Modifier` class
-3. New operations can be added to Chainr through custom operation definitions
+See the [main contributing guide](../CONTRIBUTING.md) for details on how to contribute to this module.
 
-## Integration with Other Modules
+## 📄 License
 
-- **j2j-cli** uses j2j-core for all transformation operations
-- **j2j-complete** provides factory classes for easier j2j-core usage
-- **j2j-web** uses j2j-core as the backend transformation engine
+This project is licensed under the Apache License 2.0 - see the [LICENSE](../LICENSE) file for details.

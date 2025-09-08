@@ -207,20 +207,34 @@ public class Scripts {
     public static final class jsonata extends Function.ListFunction {
         @Override
         protected Optional<Object> applyList(final List<Object> argList) {
-            // Need at least the query and data
-            if (argList.size() < 2) {
-                logger.warning("Insufficient arguments for JSONata query execution");
+            // Need at least the query
+            if (argList.isEmpty()) {
+                logger.warning("Insufficient arguments for JSONata query execution: " + argList.size());
                 return Optional.empty();
             }
 
             try {
-                // Use JSONata4Java's recommended approach with Expressions class
+                logger.info("JSONata function called with args: " + argList);
+                
+                // Use JSONata4Java's recommended approach with Expression class
                 String queryStr = (String) argList.get(0);
-                Object jsonData = argList.get(1);
+                
+                logger.info("JSONata query: " + queryStr);
                 
                 // Parse the JSONata expression using the static parse method
-                com.api.jsonata4java.expressions.Expressions expr = 
-                    com.api.jsonata4java.expressions.Expressions.parse(queryStr);
+                com.api.jsonata4java.Expression expr = 
+                    com.api.jsonata4java.Expression.jsonata(queryStr);
+                
+                // If we have data to query, use it; otherwise, create an empty object
+                Object jsonData = null;
+                if (argList.size() > 1) {
+                    jsonData = argList.get(1);
+                    logger.info("JSONata data: " + jsonData);
+                } else {
+                    // Create empty object for evaluation
+                    jsonData = new HashMap<>();
+                    logger.info("No data provided, using empty object");
+                }
                 
                 // Convert data to JsonNode using Jackson ObjectMapper
                 com.fasterxml.jackson.databind.ObjectMapper mapper = 
@@ -240,36 +254,62 @@ public class Scripts {
                     jsonNode = mapper.valueToTree(jsonData);
                 }
                 
+                logger.info("JSONata JSON node: " + jsonNode);
+                
                 // Evaluate the JSONata expression
                 com.fasterxml.jackson.databind.JsonNode result = expr.evaluate(jsonNode);
+                
+                logger.info("JSONata result: " + result);
+                logger.info("JSONata result class: " + (result != null ? result.getClass().getName() : "null"));
                 
                 // Convert result back to appropriate Java object
                 if (result == null || result.isNull()) {
                     logger.fine("JSONata query returned null result");
                     return Optional.empty();
                 } else if (result.isTextual()) {
+                    logger.info("JSONata result is textual: " + result.asText());
                     return Optional.of(result.asText());
                 } else if (result.isNumber()) {
                     if (result.isInt()) {
+                        logger.info("JSONata result is int: " + result.asInt());
                         return Optional.of(result.asInt());
                     } else if (result.isLong()) {
+                        logger.info("JSONata result is long: " + result.asLong());
                         return Optional.of(result.asLong());
                     } else {
+                        logger.info("JSONata result is double: " + result.asDouble());
                         return Optional.of(result.asDouble());
                     }
                 } else if (result.isBoolean()) {
+                    logger.info("JSONata result is boolean: " + result.asBoolean());
                     return Optional.of(result.asBoolean());
+                } else if (result.isArray()) {
+                    logger.info("JSONata result is array");
+                    // Convert array to List
+                    Object converted = mapper.treeToValue(result, Object.class);
+                    logger.info("JSONata array result: " + converted);
+                    return Optional.of(converted);
+                } else if (result.isObject()) {
+                    logger.info("JSONata result is object");
+                    // Convert object to Map
+                    Object converted = mapper.treeToValue(result, Object.class);
+                    logger.info("JSONata object result: " + converted);
+                    return Optional.of(converted);
                 } else {
+                    logger.info("JSONata result is other type");
                     // For complex objects, return as Map or List
                     Object converted = mapper.treeToValue(result, Object.class);
+                    logger.info("JSONata converted result: " + converted);
                     return Optional.of(converted);
                 }
                 
             } catch (NoClassDefFoundError e) {
                 logger.severe("JSONata4Java library not available: " + e.getMessage());
+                e.printStackTrace();
                 return Optional.empty();
             } catch (Exception e) {
                 logger.severe("JSONata query execution error: " + e.getMessage());
+                e.printStackTrace();
                 return Optional.empty();
             }
         }

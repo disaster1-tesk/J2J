@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>J2J Transform Studio</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/material-darker.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -138,6 +138,39 @@
                                     <span>Number Values</span>
                                 </div>
                                 <div class="example-desc">Handle various number formats</div>
+                            </div>
+                        </div>
+                        
+                        <!-- New Enhanced Functions Section -->
+                        <div class="dropdown-section">
+                            <div class="section-title">Enhanced Functions</div>
+                            <div class="example-item" data-operation="chain" data-example="math-functions">
+                                <div class="example-header">
+                                    <i class="fas fa-calculator"></i>
+                                    <span>Math Functions</span>
+                                </div>
+                                <div class="example-desc">Max, min, abs, sum and other math operations</div>
+                            </div>
+                            <div class="example-item" data-operation="chain" data-example="script-functions">
+                                <div class="example-header">
+                                    <i class="fas fa-code"></i>
+                                    <span>Script Functions</span>
+                                </div>
+                                <div class="example-desc">JavaScript and Python scripting</div>
+                            </div>
+                            <div class="example-item" data-operation="chain" data-example="template-functions">
+                                <div class="example-header">
+                                    <i class="fas fa-file-code"></i>
+                                    <span>Template Functions</span>
+                                </div>
+                                <div class="example-desc">Beetl template engine integration</div>
+                            </div>
+                            <div class="example-item" data-operation="chain" data-example="jsonata-functions">
+                                <div class="example-header">
+                                    <i class="fas fa-brain"></i>
+                                    <span>JSONata Functions</span>
+                                </div>
+                                <div class="example-desc">Advanced JSON query and transformation</div>
                             </div>
                         </div>
                     </div>
@@ -392,6 +425,6 @@
     <!-- Notification Container -->
     <div id="notifications" class="notifications-container"></div>
 
-    <script src="/js/main.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>

@@ -18,7 +18,7 @@ package love.disaster.j2j.comlete;
 import love.disaster.j2j.core.Chainr;
 import love.disaster.j2j.core.chainr.instantiator.ChainrInstantiator;
 import love.disaster.j2j.utils.JsonUtils;
-
+import love.disaster.j2j.comlete.ChainrFactory;
 import java.io.File;
 import java.io.FileInputStream;
 

@@ -1,0 +1,83 @@
+{
+    "input": {
+        "users": [
+            {
+                "id": 1,
+                "name": "John Doe",
+                "email": "john.doe@example.com",
+                "department": "Engineering",
+                "salary": 75000
+            },
+            {
+                "id": 2,
+                "name": "Jane Smith",
+                "email": "jane.smith@example.com",
+                "department": "Marketing",
+                "salary": 65000
+            },
+            {
+                "id": 3,
+                "name": "Bob Johnson",
+                "email": "bob.johnson@example.com",
+                "department": "Engineering",
+                "salary": 80000
+            }
+        ],
+        "company": {
+            "name": "TechCorp",
+            "founded": 2010
+        }
+    },
+    "spec": {
+        "report": {
+            "totalUsers": "=size(@(1,users))",
+            "avgSalary": "=jsonata('$avg(users.salary)', @(1))",
+            "engineeringCount": "=jsonata('$count(users[department=\"Engineering\"])', @(1))",
+            "userEmails": "=jsonata('users.email', @(1))",
+            "highestPaid": "=jsonata('$max(users.salary)', @(1))",
+            "usersByDepartment": "=jsonata('users{department: name}', @(1))",
+            "summary": "=jsonata('\"Company \" & company.name & \" has \" & $count(users) & \" users with avg salary of \" & $avg(users.salary)', @(1))"
+        }
+    },
+    "expected": {
+        "users": [
+            {
+                "id": 1,
+                "name": "John Doe",
+                "email": "john.doe@example.com",
+                "department": "Engineering",
+                "salary": 75000
+            },
+            {
+                "id": 2,
+                "name": "Jane Smith",
+                "email": "jane.smith@example.com",
+                "department": "Marketing",
+                "salary": 65000
+            },
+            {
+                "id": 3,
+                "name": "Bob Johnson",
+                "email": "bob.johnson@example.com",
+                "department": "Engineering",
+                "salary": 80000
+            }
+        ],
+        "company": {
+            "name": "TechCorp",
+            "founded": 2010
+        },
+        "report": {
+            "totalUsers": 3,
+            "avgSalary": 73333.33333333333,
+            "engineeringCount": 2,
+            "userEmails": ["john.doe@example.com", "jane.smith@example.com", "bob.johnson@example.com"],
+            "highestPaid": 80000,
+            "usersByDepartment": {
+                "Engineering": ["John Doe", "Bob Johnson"],
+                "Marketing": "Jane Smith"
+            },
+            "summary": "Company TechCorp has 3 users with avg salary of 73333.33333333333"
+        }
+    }
+}

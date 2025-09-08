@@ -1,73 +1,28 @@
 # J2J - Java to JSON Transformation Library
 
-J2J is a Java-based JSON transformation library designed to provide flexible and extensible tools for manipulating JSON data. It is particularly useful in data integration and transformation pipelines, offering both programmatic APIs and user-friendly interfaces.
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![Java 8+](https://img.shields.io/badge/java-17+-blue.svg)](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html)
+[![Maven](https://img.shields.io/badge/maven-3.6+-blue.svg)](https://maven.apache.org/)
+[![Docker](https://img.shields.io/badge/docker-latest-blue.svg)](https://www.docker.com/)
 
-## Project Modules
+J2J is a powerful Java-based JSON transformation library designed to provide flexible and extensible tools for manipulating JSON data. Built on the principles of the popular JOLT library, J2J offers enhanced capabilities for data integration and transformation pipelines.
 
-This project is organized into several Maven modules, each serving a specific purpose:
+> Try the [online web interface](http://www.disaster.love/j2j/) to experiment with JSON transformations without installing anything!
 
-1. **[j2j-core](j2j-core/README.md)** - Core transformation logic and utilities
-2. **[j2j-cli](j2j-cli/README.md)** - Command-line interface for JSON transformations
-3. **[j2j-complete](j2j-complete/README.md)** - Factory classes for transformation chains
-4. **[j2j-dependencies](j2j-dependencies/README.md)** - Dependency management module
-5. **[j2j-web](j2j-web/README.md)** - Web interface for interactive JSON transformations
+## 🚀 Quick Start
 
-## Features
+### Maven Dependency
 
-- JSON transformation using declarative specifications
-- JSON comparison (Diffy)
-- JSON sorting
-- JSON key removal, shifting, and default value setting
-- Support for complex transformation chains
-- Template engine integration (Beetl and JSONata4Java)
-- Real-time validation and transformation in web interface
-- Command-line tools for automation
-
-## Quick Start
-
-```bash
-# Clone the repository
-git clone <repository-url>
-
-# Build the entire project
-mvn clean install
-
-# Run the web interface
-mvn spring-boot:run -pl j2j-web
-
-# Or run the CLI tool
-java -jar j2j-cli/target/j2j-cli-1.0-SNAPSHOT.jar --help
+```xml
+<dependency>
+    <groupId>love.disaster</groupId>
+    <artifactId>j2j-core</artifactId>
+    <version>1.0-SNAPSHOT</version>
+</dependency>
 ```
 
-## Technology Stack
+### Simple Usage
 
-- **Language**: Java 8
-- **Build Tool**: Maven
-- **Core Libraries**: Custom JSON transformation utilities based on JOLT concepts
-- **Web Framework**: Spring Boot 2.7.18
-- **Frontend Libraries**: CodeMirror, Bootstrap
-- **JSON Processing**: Jackson 2.13.4
-
-## Module Overview
-
-### j2j-core
-The foundation of the entire library, containing all core transformation classes like Shiftr, Defaultr, Removr, Sortr, and Chainr. This module implements the actual JSON transformation logic.
-
-### j2j-cli
-A command-line interface that allows users to perform JSON transformations directly from the terminal without writing Java code.
-
-### j2j-complete
-Provides factory classes that make it easier to create and configure transformation chains, serving as a bridge between core logic and other modules.
-
-### j2j-dependencies
-Centralizes dependency management for all J2J modules, ensuring consistent versions and avoiding conflicts.
-
-### j2j-web
-A web-based interface for interactive JSON transformations, featuring real-time validation and a user-friendly editor.
-
-## Usage Examples
-
-### Using the Core API
 ```java
 // Create a transformation specification
 Object spec = JsonUtils.jsonToObject("{ \"*\": \"&\" }");
@@ -83,39 +38,95 @@ Object output = chainr.transform(input);
 String result = JsonUtils.toJsonString(output);
 ```
 
-### Using the CLI
-```bash
-# Transform JSON using a specification file
-java -jar j2j-cli.jar transform -t chain -i input.json -s spec.json -o output.json
+## 📚 Documentation
 
-# Sort JSON keys
-java -jar j2j-cli.jar sort -i input.json -o output.json
+- [Getting Started Guide](docs/GETTING_STARTED.md) - Installation and quick start
+- [User Guide](docs/USER_GUIDE.md) - Comprehensive usage guide
+- [Tutorials](docs/tutorials/) - Step-by-step learning guides
+- [API Reference](docs/REFERENCE.md) - Complete technical reference
+- [Examples](docs/EXAMPLES.md) - Practical use cases
+
+## 🛠️ Key Features
+
+- **Multiple Transformation Operations**: Shift, Default, Remove, Sort, and Chain operations
+- **Declarative Specifications**: Define transformations using JSON specifications
+- **Command-Line Interface**: Use transformations directly from the terminal
+- **Web Interface**: Interactive web-based transformation tool at [http://www.disaster.love/j2j/](http://www.disaster.love/j2j/)
+- **Extensible Architecture**: Create custom transformations and functions
+- **Template Engine Integration**: Support for Beetl and JSONata expressions
+- **Comprehensive Validation**: Built-in JSON and specification validation
+- **Performance Optimized**: Efficient processing for large JSON documents
+- **Docker Support**: Containerized deployment for easy distribution
+
+## 📦 Modules
+
+| Module | Description |
+|--------|-------------|
+| [j2j-core](j2j-core/) | Core transformation logic and utilities |
+| [j2j-cli](j2j-cli/) | Command-line interface for JSON transformations |
+| [j2j-complete](j2j-complete/) | Factory classes for transformation chains |
+| [j2j-dependencies](j2j-dependencies/) | Centralized dependency management |
+| [j2j-web](j2j-web/) | Web interface for interactive JSON transformations |
+
+## 🚀 Try It Online
+
+Experiment with JSON transformations without installing anything:
+
+👉 **[http://www.disaster.love/j2j/](http://www.disaster.love/j2j/)**
+
+## 🐳 Docker Deployment
+
+```bash
+# Build the project
+mvn clean package -DskipTests
+
+# Build the Docker image
+docker build -t j2j-web:latest .
+
+# Run the container
+docker run -p 8080:8080 j2j-web:latest
 ```
 
-## Development
+## 📖 Learning Resources
 
-### Building the Project
+- [First Transformation Tutorial](docs/tutorials/first-transformation.md)
+- [Shiftr Tutorial](docs/tutorials/shiftr.md)
+- [Modifier Tutorial](docs/tutorials/modifier.md)
+- [Chainr Tutorial](docs/tutorials/chainr.md)
+
+## 🏗️ Building from Source
+
 ```bash
-# Build all modules
+# Clone the repository
+git clone https://github.com/your-username/j2j.git
+cd j2j
+
+# Build the entire project
 mvn clean install
 
-# Build a specific module
-mvn clean install -pl j2j-core
-```
-
-### Running Tests
-```bash
-# Run tests for all modules
+# Run tests
 mvn test
 
-# Run tests for a specific module
-mvn test -pl j2j-core
+# Package for distribution
+mvn package
 ```
 
-## Contributing
+## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit pull requests or open issues for bugs and feature requests.
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
-## License
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a pull request
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## 📄 License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Inspired by the [JOLT](https://github.com/bazaarvoice/jolt) library
+- Built with [Spring Boot](https://spring.io/projects/spring-boot)
+- JSON processing powered by [Jackson](https://github.com/FasterXML/jackson)
